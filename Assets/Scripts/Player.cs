@@ -6,6 +6,8 @@ public class Player : MonoBehaviour
 {
     Ship self;
 
+    public Ship Self { get => self; }
+
     // Start is called before the first frame update
     void Start()
     {

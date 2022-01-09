@@ -21,6 +21,7 @@ public class Asteroid : MonoBehaviour
             size = Random.Range(1, 8);
             health = Random.Range(1, 14) * size;
             style = Random.Range(0, sprites.Count);
+            size = size / transform.parent.localScale.x;
 
             transform.localScale = new Vector3(size, size, size);
             GetComponent<SpriteRenderer>().sprite = sprites[style];

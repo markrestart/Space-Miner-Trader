@@ -324,27 +324,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c0467ff60651284eb0e557e0275fd0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  turnThrust: 40
-  mainThrust: 2
-  brakeThrust: 0.5
-  maxVelocity: 10
-  fuelPerSecond: 1
-  maxShield: 0
-  shieldRegenPerSecond: 0
-  engine: {fileID: 6553399829978664612}
-  shieldSprite: {fileID: 2150063400039372102}
-  fuel: 100
-  hull: 100
-  shield: 100
-  cargo: 0
-  primaryWeapon: {fileID: 6200486848303605555, guid: 3f0ce566681dea043bda551eb98cce76, type: 3}
-  secondaryWeapon: {fileID: 5614462593253229775, guid: a1f6fb85f2e11494f95c39a63bbe3cf9, type: 3}
-  primaryCooldown: 1
-  secondaryCooldown: 2
-  primaryAuto: 1
-  secondaryAuto: 0
+  frame:
+    sprite: {fileID: 21300000, guid: f7d20690463d2994b8ae6c03984d25f8, type: 3}
+    maxHull: 0
+    cargoCapacity: 0
+    fuelCapacity: 0
+  shield:
+    maxShield: 10
+    shieldRegenPerSecond: 0
+    energyCost: 0
+    sprite: {fileID: 21300000, guid: 4532819729b8cf9449f21c23a43fe76d, type: 3}
+  engine:
+    turnThrust: 0
+    mainThrust: 0
+    brakeThrust: 0
+    maxVelocity: 0
+    fuelPerSecond: 0
+    energyCost: 0
+    sprite: {fileID: 21300000, guid: afc1b1a0c4ce081439d05129328dbd48, type: 3}
+  generator:
+    energyPerSecond: 4
+    maxEnergy: 20
+  primaryWeapon:
+    loadout: {fileID: 0}
+    cooldownTime: 0
+    energyCost: 0
+    isAuto: 0
+  secondaryWeapon:
+    loadout: {fileID: 0}
+    cooldownTime: 0
+    energyCost: 0
+    isAuto: 0
   primarySpawn: {fileID: 2959074636014416464}
   secondarySpawn: {fileID: 3708530287321786848}
+  engineSprite: {fileID: 6553399829978664612}
+  shieldSprite: {fileID: 2150063400039372102}
 --- !u!58 &8624344299355748845
 CircleCollider2D:
   m_ObjectHideFlags: 0

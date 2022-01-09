@@ -6,7 +6,10 @@ using UnityEngine.UI;
 public class ShipUI : MonoBehaviour
 {
     [SerializeField]
-    Text UI;
+    Text SpeedText, FuelText, HullText, ShieldText, CargoText, EnergyText, CreditsText;
+
+    [SerializeField]
+    Slider FuelBar, HullBar, ShieldBar, CargoBar, EnergyBar;
 
     Ship self;
 
@@ -20,6 +23,18 @@ public class ShipUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UI.text = "Fuel: " + self.Fuel + "\nHull: " + self.Hull + "\nShield: " + self.Shield + "\nCargo: " + self.Cargo + "\nSpeed: " + self.Speed;
+        SpeedText.text = "Speed: " + self.Speed.ToString("0.#");
+        CreditsText.text = "Credits: " + self.Credits;
+        FuelText.text = "Fuel: " + self.Fuel.ToString("0.#");
+        HullText.text = "Hull: " + self.Hull.ToString("0.#");
+        ShieldText.text = "Shield: " + self.CurrentShield.ToString("0.#");
+        CargoText.text = "Cargo: " + self.Cargo.ToString("0.#");
+        EnergyText.text = "Energy: " + self.Energy.ToString("0.#");
+
+        FuelBar.value = self.Fuel / self.MaxFuel;
+        HullBar.value = self.Hull / self.MaxHull;
+        ShieldBar.value = self.CurrentShield / self.MaxShield;
+        CargoBar.value = self.Cargo / self.MaxCargo;
+        EnergyBar.value = self.Energy / self.MaxEnergy;
     }
 }

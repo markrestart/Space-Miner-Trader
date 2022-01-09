@@ -4,123 +4,157 @@ using UnityEngine;
 
 public class Ship : MonoBehaviour
 {
-    Vector2 velocity;
     [SerializeField]
-    public float turnThrust, mainThrust, brakeThrust, maxVelocity, fuelPerSecond, maxShield, shieldRegenPerSecond;
+    Frame frame;
     [SerializeField]
-    SpriteRenderer engine, shieldSprite;
+    Shield shield;
+    [SerializeField]
+    Engine engine;
+    [SerializeField]
+    Generator generator;
+    [SerializeField]
+    Weapon primaryWeapon, secondaryWeapon;
 
-    [SerializeField]
-    float fuel, hull, shield, cargo;
-    float engineVisability, shieldVisability;
-
-    [SerializeField]
-    GameObject primaryWeapon, secondaryWeapon;
-    [SerializeField]
-    float primaryCooldown, secondaryCooldown;
-    [SerializeField]
-    bool primaryAuto, secondaryAuto;
     [SerializeField]
     Transform primarySpawn, secondarySpawn;
-    float lastPrimaryFire, lastSecondaryFire;
 
-    public float Fuel { get => fuel; }
-    public float Hull { get => hull; }
-    public float Shield { get => shield; }
-    public float Cargo { get => cargo; }
+    Vector2 velocity;
+
+    [SerializeField]
+    SpriteRenderer engineSprite, shieldSprite;
+
+    float engineVisability, shieldVisability;
+    int credits;
+
+
+
+    public float Fuel { get => frame.Currentfuel; }
+    public float Hull { get => frame.CurrentHull; }
+    public float CurrentShield { get => shield.CurrentShield; }
+    public float Cargo { get => frame.CurrentCargo; }
+    public Dictionary<ResourceType, int> Inventory { get => frame.Cargo; }
     public float Speed { get => velocity.magnitude; }
+    public float Energy { get => generator.CurrentEnergy; }
+
+    public float MaxFuel { get => frame.fuelCapacity; }
+    public float MaxHull { get => frame.maxHull; }
+    public float MaxShield { get => shield.maxShield; }
+    public float MaxCargo { get => frame.cargoCapacity; }
+    public float MaxEnergy { get => generator.maxEnergy; }
+
     public Vector2 Velocity { get => velocity; }
+    public int Credits { get => credits; set => credits = value; }
+
+    private void Start()
+    {
+        frame.Currentfuel = frame.fuelCapacity;
+        frame.CurrentHull = frame.maxHull;
+        MatchParts();
+    }
+
+    void MatchParts()
+    {
+        GetComponent<SpriteRenderer>().sprite = frame.sprite;
+        shieldSprite.sprite = shield.sprite;
+        engineSprite.sprite = engine.sprite;
+    }
 
     public void Turn(float amount)
     {
-        transform.Rotate(Vector3.back * amount * turnThrust * Time.deltaTime);
+        transform.Rotate(Vector3.back * amount * engine.turnThrust * Time.deltaTime);
     }
 
     public void Brake()
     {
-        velocity = velocity.normalized * (velocity.magnitude - brakeThrust * Time.deltaTime);
+        velocity = velocity.normalized * (velocity.magnitude - engine.brakeThrust * Time.deltaTime);
     }
 
     public void Accelerate(float amount)
     {
-        if (fuel > 0)
+        if (frame.Currentfuel >= engine.fuelPerSecond * Time.deltaTime && generator.CurrentEnergy >= engine.energyCost * Time.deltaTime)
         {
-            velocity += (Vector2)transform.up * amount * mainThrust * Time.deltaTime;
-            fuel -= fuelPerSecond * Time.deltaTime;
+            velocity += (Vector2)transform.up * amount * engine.mainThrust * Time.deltaTime;
+            frame.Currentfuel -= engine.fuelPerSecond * Time.deltaTime;
+            generator.CurrentEnergy -= engine.energyCost * Time.deltaTime;
             engineVisability = amount;
+        }
+    }
+
+    public void Repair()
+    {
+        frame.Repair();
+    }
+
+    private void FireWeapon(bool newPress, Weapon weapon, Transform spawn)
+    {
+        if (Time.time > weapon.LastFireTime + weapon.cooldownTime && weapon.energyCost <= generator.CurrentEnergy)
+        {
+            if (newPress || weapon.isAuto)
+            {
+                generator.CurrentEnergy -= weapon.energyCost;
+                weapon.LastFireTime = Time.time;
+                GameObject p = Instantiate(weapon.loadout, spawn.position, spawn.rotation);
+                if (p.GetComponent<Missile>() != null)
+                {
+                    RaycastHit2D hit = Physics2D.Raycast(transform.position + transform.up * 2, transform.up);
+                    if (hit)
+                    {
+                        p.GetComponent<Missile>().SetTarget(hit.transform);
+                    }
+                }
+            }
         }
     }
 
     public void FirePrimary(bool newPress)
     {
-        if(Time.time > lastPrimaryFire + primaryCooldown)
-        {
-            if(newPress || primaryAuto)
-            {
-                lastPrimaryFire = Time.time;
-                GameObject p = Instantiate(primaryWeapon, primarySpawn.position, primarySpawn.rotation);
-                if(p.GetComponent<Missile>() != null)
-                {
-                    RaycastHit2D hit = Physics2D.Raycast(transform.position + transform.forward * 2, transform.forward);
-                    if (hit)
-                    {
-                        p.GetComponent<Missile>().SetTarget(hit.transform);
-                    }
-                }
-            }
-        }
+        FireWeapon(newPress, primaryWeapon, primarySpawn);
     }
 
     public void FireSecondary(bool newPress)
     {
-        if (Time.time > lastSecondaryFire + secondaryCooldown)
-        {
-            if (newPress || secondaryAuto)
-            {
-                lastSecondaryFire = Time.time;
-                GameObject p = Instantiate(secondaryWeapon, secondarySpawn.position, secondarySpawn.rotation);
-                if (p.GetComponent<Missile>() != null)
-                {
-                    RaycastHit2D hit = Physics2D.CircleCast(transform.position + transform.up * 3, 1, transform.up);
-                    if (hit)
-                    {
-                        p.GetComponent<Missile>().SetTarget(hit.transform);
-                    }
-                }
-            }
-        }
+        FireWeapon(newPress, secondaryWeapon, secondarySpawn);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(velocity.magnitude > maxVelocity) { velocity = velocity.normalized * maxVelocity; }
+        if(velocity.magnitude > engine.maxVelocity) { velocity = velocity.normalized * engine.maxVelocity; }
         transform.Translate(velocity * Time.deltaTime, Space.World);
 
         ShieldRegen();
+        RunGenerator();
         Effects();
     }
 
     void ShieldRegen()
     {
-        if(shield < maxShield)
+        if(shield.CurrentShield < shield.maxShield && generator.CurrentEnergy >= shield.energyCost * Time.deltaTime)
         {
-            shield += shieldRegenPerSecond * Time.deltaTime;
+            shield.CurrentShield += shield.shieldRegenPerSecond * Time.deltaTime;
+            generator.CurrentEnergy -= shield.energyCost * Time.deltaTime;
         }
-        if(shield > maxShield)
+        if(shield.CurrentShield > shield.maxShield)
         {
-            shield = maxShield;
+            shield.CurrentShield = shield.maxShield;
         }
+    }
+
+    void RunGenerator()
+    {
+        generator.CurrentEnergy += generator.energyPerSecond * Time.deltaTime;
+        if(generator.CurrentEnergy > generator.maxEnergy) { generator.CurrentEnergy = generator.maxEnergy; }
     }
 
     void Effects() {
         if (engineVisability > 0)
         {
-            engine.color = new Color(1,1,1,engineVisability);
+            engineSprite.color = new Color(1,1,1,engineVisability);
+            engineVisability = 0;
         }
         else
         {
-            engine.color = new Color(1, 1, 1, 0);
+            engineSprite.color = new Color(1, 1, 1, 0);
         }
 
         if(shieldVisability > 0)
@@ -145,6 +179,17 @@ public class Ship : MonoBehaviour
             collision.rigidbody.AddForce(velocity, ForceMode2D.Impulse);
             Vector2 direction = transform.position - collision.transform.position;
             velocity += direction.normalized * velocity.magnitude;
+        }else if(collision.gameObject.tag == "Resource")
+        {
+            if (frame.AddResource(collision.gameObject.GetComponent<Resource>().Data))
+            {
+                Destroy(collision.gameObject);
+            }
+        }else if(collision.gameObject.tag == "Station")
+        {
+            collision.gameObject.GetComponent<Station>().OpenStation();
+            transform.Translate((transform.position - collision.transform.position) * 2);
+            velocity = Vector2.zero;
         }
     }
 
@@ -153,17 +198,17 @@ public class Ship : MonoBehaviour
         shieldSprite.transform.LookAt(source, Vector3.back);
         shieldSprite.transform.rotation = Quaternion.Euler(0, 0, shieldSprite.transform.rotation.eulerAngles.z);
 
-        if(shield > amount)
+        if(shield.CurrentShield > amount)
         {
-            shield -= amount;
+            shield.CurrentShield -= amount;
             shieldVisability += 1;
         }
         else
         {
-            amount -= shield;
+            amount -= shield.CurrentShield;
             shieldVisability = 1;
-            shield = 0;
-            hull -= amount;
+            shield.CurrentShield = 0;
+            frame.CurrentHull -= amount;
         }
     }
 }
