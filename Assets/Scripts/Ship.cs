@@ -85,6 +85,21 @@ public class Ship : MonoBehaviour
         frame.Repair();
     }
 
+    public void Refuel()
+    {
+        frame.Refuel();
+    }
+
+    public bool AddResource(ResourceType r)
+    {
+        return frame.AddResource(r);
+    }
+
+    public bool RemoveResource(ResourceType r)
+    {
+        return frame.RemoveResource(r);
+    }
+
     private void FireWeapon(bool newPress, Weapon weapon, Transform spawn)
     {
         if (Time.time > weapon.LastFireTime + weapon.cooldownTime && weapon.energyCost <= generator.CurrentEnergy)

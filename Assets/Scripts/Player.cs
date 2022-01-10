@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         self = GetComponent<Ship>();
+        ResourceLedger.Initialize();
     }
 
     // Update is called once per frame

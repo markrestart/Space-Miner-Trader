@@ -7,10 +7,21 @@ public class BuySellManager : MonoBehaviour
 {
     public Button buy, sell;
     public Text buyText, sellText, label;
+    private Station station;
+    private ResourceType resource;
+
+
+
     // Start is called before the first frame update
     void Start()
     {
-        
+ 
+    }
+
+    public void SetVars(Station s, ResourceType r)
+    {
+        station = s;
+        resource = r;
     }
 
     // Update is called once per frame
@@ -37,5 +48,15 @@ public class BuySellManager : MonoBehaviour
             sellText.text = "Cannot sell";
             sell.interactable = false;
         }
+    }
+
+    public void Buy()
+    {
+        station.Buy(resource);
+    }
+
+    public void Sell()
+    {
+        station.Sell(resource);
     }
 }

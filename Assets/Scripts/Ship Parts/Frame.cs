@@ -51,6 +51,12 @@ public class Frame : Part
         if(currentHull > maxHull) { currentHull = maxHull; }
     }
 
+    public void Refuel()
+    {
+        currentfuel++;
+        if(currentfuel > fuelCapacity) { currentfuel = fuelCapacity; }
+    }
+
     public float CurrentHull { get => currentHull; set => currentHull = value; }
     public float CurrentCargo { get => cargoWeight; }
     public float Currentfuel { get => currentfuel; set => currentfuel = value; }

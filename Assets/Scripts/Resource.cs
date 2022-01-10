@@ -12,7 +12,7 @@ public class Resource : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        data = ResourceLedger.RTs[Random.Range(0, ResourceLedger.RTs.Count)];
     }
 
     // Update is called once per frame

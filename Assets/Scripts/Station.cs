@@ -5,12 +5,12 @@ using UnityEngine.UI;
 
 public class Station : MonoBehaviour
 {
-    private int repairPrice, fuelBuyPrice, fuelSellPrice;
+    private int repairPrice, fuelPrice;
     private Dictionary<ResourceType, int> buyPrices = new Dictionary<ResourceType, int>();
     private Dictionary<ResourceType, int> sellPrices = new Dictionary<ResourceType, int>();
     private Dictionary<ResourceType, BuySellManager> menuLines = new Dictionary<ResourceType, BuySellManager>();
     [SerializeField]
-    private GameObject stationMenu, buySellMenu, menuLinePrefab;
+    private GameObject stationMenu, buySellMenu, menuLinePrefab, repair, fuel;
 
 
     Player player;
@@ -19,8 +19,7 @@ public class Station : MonoBehaviour
     void Start()
     {
         repairPrice = Random.Range(1, 5);
-        fuelBuyPrice = Random.Range(1, 3);
-        fuelSellPrice = Mathf.RoundToInt(fuelBuyPrice * Random.Range(.5f, 1.1f));
+        fuelPrice = Random.Range(1, 3);
 
         foreach(ResourceType r in ResourceLedger.RTs)
         {
@@ -29,6 +28,8 @@ public class Station : MonoBehaviour
             price = Mathf.RoundToInt(price * Random.Range(.5f, 1.1f));
             sellPrices.Add(r, price);
             menuLines.Add(r, Instantiate(menuLinePrefab, buySellMenu.transform).GetComponent<BuySellManager>());
+
+            menuLines[r].SetVars(this, r);
         }
 
 
@@ -63,24 +64,45 @@ public class Station : MonoBehaviour
                 );
         }
 
-        //if(player.Self.Hull < player.Self.MaxHull)
-        //{
-        //    if(player.Self.Credits > repairPrice)
-        //    {
-        //        repair.GetComponent<Button>().interactable = true;
-        //        repair.GetComponentInChildren<Text>().text = "Repair - " + repairPrice + "C";
-        //    }
-        //    else
-        //    {
-        //        repair.GetComponent<Button>().interactable = false;
-        //        repair.GetComponentInChildren<Text>().text = "Can't afford - " + repairPrice + "C";
-        //    }
-        //}
-        //else
-        //{
-        //    repair.GetComponent<Button>().interactable = false;
-        //    repair.GetComponentInChildren<Text>().text = "Fully repaired";
-        //}
+        //Repair
+        if (player.Self.Hull < player.Self.MaxHull)
+        {
+            if (player.Self.Credits > repairPrice)
+            {
+                repair.GetComponent<Button>().interactable = true;
+                repair.GetComponentInChildren<Text>().text = "Repair - " + repairPrice + "C";
+            }
+            else
+            {
+                repair.GetComponent<Button>().interactable = false;
+                repair.GetComponentInChildren<Text>().text = "Can't afford - " + repairPrice + "C";
+            }
+        }
+        else
+        {
+            repair.GetComponent<Button>().interactable = false;
+            repair.GetComponentInChildren<Text>().text = "Fully repaired";
+        }
+
+        //Fuel
+        if (player.Self.Fuel < player.Self.MaxFuel)
+        {
+            if (player.Self.Credits > fuelPrice)
+            {
+                fuel.GetComponent<Button>().interactable = true;
+                fuel.GetComponentInChildren<Text>().text = "Refuel - " + fuelPrice + "C";
+            }
+            else
+            {
+                fuel.GetComponent<Button>().interactable = false;
+                fuel.GetComponentInChildren<Text>().text = "Can't afford - " + fuelPrice + "C";
+            }
+        }
+        else
+        {
+            fuel.GetComponent<Button>().interactable = false;
+            fuel.GetComponentInChildren<Text>().text = "Fully fueled";
+        }
     }
 
     public void Repair()
@@ -92,8 +114,32 @@ public class Station : MonoBehaviour
 
     public void BuyFuel()
     {
-        player.Self.Repair();
-        player.Self.Credits -= fuelBuyPrice;
+        player.Self.Refuel();
+        player.Self.Credits -= fuelPrice;
         SetButtons();
+    }
+
+    public void Buy(ResourceType r)
+    {
+        if(player.Self.Credits >= buyPrices[r] && player.Self.Cargo + r.weight <= player.Self.MaxCargo)
+        {
+            if (player.Self.AddResource(r))
+            {
+                player.Self.Credits -= buyPrices[r];
+            }
+            SetButtons();
+        }
+    }
+
+    public void Sell(ResourceType r)
+    {
+        if (player.Self.Inventory.ContainsKey(r) && player.Self.Inventory[r] >= 1)
+        {
+            if (player.Self.RemoveResource(r))
+            {
+                player.Self.Credits += sellPrices[r];
+            }
+            SetButtons();
+        }
     }
 }
