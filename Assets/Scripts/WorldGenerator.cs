@@ -6,6 +6,8 @@ public class WorldGenerator : MonoBehaviour
 {
     [SerializeField]
     List<SpawnStats> objects;
+    [SerializeField]
+    GameObject blankChunk;
 
     float minX, maxX, minY, maxY;
     int x, y;
@@ -78,6 +80,57 @@ public class WorldGenerator : MonoBehaviour
                 activeChunk = false;
             }
         }
+
+        foreach(Transform t in transform)
+        {
+            if (t.position.x < minX)
+            {
+                if (map.FindLast(n => n.X == x - 1 && n.y == y) != null)
+                {
+                    t.transform.parent = map.FindLast(n => n.X == x - 1 && n.y == y).transform;
+                }
+                else
+                {
+                    Destroy(t.gameObject);
+                }
+            }
+
+            if (t.position.x > maxX)
+            {
+                if (map.FindLast(n => n.X == x + 1 && n.y == y) != null)
+                {
+                    t.transform.parent = map.FindLast(n => n.X == x + 1 && n.y == y).transform;
+                }
+                else
+                {
+                    Destroy(t.gameObject);
+                }
+            }
+
+            if (t.position.y < minY)
+            {
+                if (map.FindLast(n => n.X == x && n.y == y - 1) != null)
+                {
+                    t.transform.parent = map.FindLast(n => n.X == x && n.y == y - 1).transform;
+                }
+                else
+                {
+                    Destroy(t.gameObject);
+                }
+            }
+
+            if (t.position.y > maxY)
+            {
+                if (map.FindLast(n => n.X == x && n.y == y + 1) != null)
+                {
+                    t.transform.parent = map.FindLast(n => n.X == x && n.y == y + 1).transform;
+                }
+                else
+                {
+                    Destroy(t.gameObject);
+                }
+            }
+        }
     }
 
     void CheckNeighbors() { 
@@ -111,7 +164,7 @@ public class WorldGenerator : MonoBehaviour
 
     void MakeChunk(Vector2 position, int setX, int setY)
     {
-        Instantiate(gameObject, new Vector3(position.x,position.y,10), Quaternion.identity).GetComponent<WorldGenerator>().SetXY(setX, setY);
+        Instantiate(blankChunk, new Vector3(position.x,position.y,10), Quaternion.identity).GetComponent<WorldGenerator>().SetXY(setX, setY);
     }
     void SetXY(int setX, int setY)
     {

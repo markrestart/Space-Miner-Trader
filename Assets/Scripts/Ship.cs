@@ -26,7 +26,8 @@ public class Ship : MonoBehaviour
     float engineVisability, shieldVisability;
     int credits;
 
-
+    [SerializeField]
+    GameObject explosion, resourceDrop;
 
     public float Fuel { get => frame.Currentfuel; }
     public float Hull { get => frame.CurrentHull; }
@@ -44,11 +45,14 @@ public class Ship : MonoBehaviour
 
     public Vector2 Velocity { get => velocity; }
     public int Credits { get => credits; set => credits = value; }
+    public Engine Engine { get => engine;}
 
     private void Start()
     {
         frame.Currentfuel = frame.fuelCapacity;
         frame.CurrentHull = frame.maxHull;
+        shield.CurrentShield = shield.maxShield;
+        generator.CurrentEnergy = generator.maxEnergy;
         MatchParts();
     }
 
@@ -56,28 +60,33 @@ public class Ship : MonoBehaviour
     {
         GetComponent<SpriteRenderer>().sprite = frame.sprite;
         shieldSprite.sprite = shield.sprite;
-        engineSprite.sprite = engine.sprite;
+        engineSprite.sprite = engine.Sprite;
     }
 
     public void Turn(float amount)
     {
-        transform.Rotate(Vector3.back * amount * engine.turnThrust * Time.deltaTime);
+        transform.Rotate(Vector3.back * amount * engine.TurnThrust * Time.deltaTime);
     }
 
     public void Brake()
     {
-        velocity = velocity.normalized * (velocity.magnitude - engine.brakeThrust * Time.deltaTime);
+        velocity = velocity.normalized * (velocity.magnitude - engine.BrakeThrust * Time.deltaTime);
     }
 
     public void Accelerate(float amount)
     {
-        if (frame.Currentfuel >= engine.fuelPerSecond * Time.deltaTime && generator.CurrentEnergy >= engine.energyCost * Time.deltaTime)
+        if (frame.Currentfuel >= engine.FuelPerSecond * Time.deltaTime && generator.CurrentEnergy >= engine.EnergyCost * Time.deltaTime)
         {
-            velocity += (Vector2)transform.up * amount * engine.mainThrust * Time.deltaTime;
-            frame.Currentfuel -= engine.fuelPerSecond * Time.deltaTime;
-            generator.CurrentEnergy -= engine.energyCost * Time.deltaTime;
+            velocity += (Vector2)transform.up * amount * engine.MainThrust * Time.deltaTime;
+            frame.Currentfuel -= engine.FuelPerSecond * Time.deltaTime;
+            generator.CurrentEnergy -= engine.EnergyCost * Time.deltaTime;
             engineVisability = amount;
         }
+    }
+
+    public void AddForce(Vector2 force)
+    {
+        velocity += force;
     }
 
     public void Repair()
@@ -109,6 +118,7 @@ public class Ship : MonoBehaviour
                 generator.CurrentEnergy -= weapon.energyCost;
                 weapon.LastFireTime = Time.time;
                 GameObject p = Instantiate(weapon.loadout, spawn.position, spawn.rotation);
+                p.transform.parent = transform.parent;
                 if (p.GetComponent<Missile>() != null)
                 {
                     RaycastHit2D hit = Physics2D.Raycast(transform.position + transform.up * 2, transform.up);
@@ -134,7 +144,7 @@ public class Ship : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(velocity.magnitude > engine.maxVelocity) { velocity = velocity.normalized * engine.maxVelocity; }
+        if(velocity.magnitude > engine.MaxVelocity) { velocity = velocity.normalized * engine.MaxVelocity; }
         transform.Translate(velocity * Time.deltaTime, Space.World);
 
         ShieldRegen();
@@ -174,7 +184,7 @@ public class Ship : MonoBehaviour
 
         if(shieldVisability > 0)
         {
-            shieldSprite.color = new Color(1, 1, 1, shieldVisability);
+            shieldSprite.color = new Color(1, 1, 1, shieldVisability/10);
             shieldVisability -= Time.deltaTime;
         }
         else
@@ -202,8 +212,10 @@ public class Ship : MonoBehaviour
             }
         }else if(collision.gameObject.tag == "Station")
         {
-            collision.gameObject.GetComponent<Station>().OpenStation();
-            transform.Translate((transform.position - collision.transform.position) * 2);
+            if(gameObject.GetComponent<Player>() != null){
+                collision.gameObject.GetComponent<Station>().OpenStation();
+            }
+            transform.position = collision.transform.position +  (transform.position - collision.transform.position).normalized * 4;
             velocity = Vector2.zero;
         }
     }
@@ -216,7 +228,8 @@ public class Ship : MonoBehaviour
         if(shield.CurrentShield > amount)
         {
             shield.CurrentShield -= amount;
-            shieldVisability += 1;
+            shieldVisability += amount;
+            if(shieldVisability > 10) { shieldVisability = 10; }
         }
         else
         {
@@ -224,6 +237,24 @@ public class Ship : MonoBehaviour
             shieldVisability = 1;
             shield.CurrentShield = 0;
             frame.CurrentHull -= amount;
+
+            if(Hull < 0)
+            {
+                Destruction();
+            }
         }
+    }
+
+    private void Destruction()
+    {
+        foreach(KeyValuePair<ResourceType, int> data in frame.Cargo)
+        {
+            for (int i = 0; i < data.Value; i++)
+            {
+                Instantiate(resourceDrop, transform.position + new Vector3(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f), 0), Quaternion.identity).GetComponent<Resource>().Data = data.Key;
+            }
+        }
+        Instantiate(explosion, transform.position - Vector3.back * 2, transform.rotation);
+        Destroy(gameObject);
     }
 }

@@ -359,6 +359,8 @@ MonoBehaviour:
   secondarySpawn: {fileID: 3708530287321786848}
   engineSprite: {fileID: 6553399829978664612}
   shieldSprite: {fileID: 2150063400039372102}
+  explosion: {fileID: 1655717462871556693, guid: 4975f14719ab5924cb26bd367f03f4f1, type: 3}
+  resourceDrop: {fileID: 3867224747015580359, guid: c8ca6029fe2987a408e91567edb701f6, type: 3}
 --- !u!58 &8624344299355748845
 CircleCollider2D:
   m_ObjectHideFlags: 0
