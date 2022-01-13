@@ -8,10 +8,13 @@ public class Player : MonoBehaviour
 
     public Ship Self { get => self; }
 
+    Minimap map;
+
     // Start is called before the first frame update
     void Start()
     {
         self = GetComponent<Ship>();
+        map = GetComponentInChildren<Minimap>();
         ResourceLedger.Initialize();
     }
 
@@ -29,5 +32,24 @@ public class Player : MonoBehaviour
 
         if (Input.GetButtonDown("Fire2")) { self.FireSecondary(true); } else
         if (Input.GetButton("Fire2")) { self.FireSecondary(false); }
+
+        List<MapObject> objects = new List<MapObject>();
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 50);
+        foreach(Collider2D c in hits)
+        {
+            if(c.tag == "Asteroid")
+            {
+                objects.Add(new MapObject(c.transform.position - transform.position, 1));
+            }else if(c.tag == "Ship" && c.gameObject != gameObject)
+            {
+                objects.Add(new MapObject(c.transform.position - transform.position, 2));
+            }
+            else if(c.tag == "Station")
+            {
+                objects.Add(new MapObject(c.transform.position - transform.position, 3));
+            }
+        }
+
+        map.UpdateMap(objects);
     }
 }
