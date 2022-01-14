@@ -119,13 +119,14 @@ public class Ship : MonoBehaviour
                 weapon.LastFireTime = Time.time;
                 GameObject p = Instantiate(weapon.loadout, spawn.position, spawn.rotation);
                 p.transform.parent = transform.parent;
-                if (p.GetComponent<Missile>() != null)
+                    RaycastHit2D hit = Physics2D.CircleCast(transform.position + transform.up * 2, 1, transform.up, 20);
+                if (hit)
                 {
-                    RaycastHit2D hit = Physics2D.Raycast(transform.position + transform.up * 2, transform.up);
-                    if (hit)
-                    {
-                        p.GetComponent<Missile>().SetTarget(hit.transform);
-                    }
+                    p.GetComponent<Projectile>().SetProperties(hit.transform, this);
+                }
+                else
+                {
+                    p.GetComponent<Projectile>().SetProperties(transform.up, this);
                 }
             }
         }
@@ -138,7 +139,7 @@ public class Ship : MonoBehaviour
 
     public void FireSecondary(bool newPress)
     {
-        FireWeapon(newPress, secondaryWeapon, secondarySpawn);
+        FireWeapon(newPress, secondaryWeapon, primarySpawn);
     }
 
     // Update is called once per frame

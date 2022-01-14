@@ -38,7 +38,7 @@ public class WorldGenerator : MonoBehaviour
         minY = transform.position.y - transform.lossyScale.y / 2;
         maxY = transform.position.y + transform.lossyScale.y / 2;
 
-        float size = (maxX - minX) * (maxY - minY)/1000;
+        float size = (maxX - minX) * (maxY - minY)/10000;
 
         foreach(SpawnStats pair in objects)
         {

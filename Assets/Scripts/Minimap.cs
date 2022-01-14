@@ -26,6 +26,11 @@ public class Minimap : MonoBehaviour
             transform.GetChild(i).localPosition = o.relativePosition;
             i++;
         }
+        while (i < transform.childCount)
+        {
+            transform.GetChild(i).localPosition = Vector2.down * 10000;
+            i++;
+        }
     }
 
 }

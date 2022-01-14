@@ -126,7 +126,7 @@ MonoBehaviour:
   timeToFire: 2
   thrust: 5
   turn: 0.3
-  power: 10
+  power: 1
 --- !u!50 &3834732216570218675
 Rigidbody2D:
   serializedVersion: 4

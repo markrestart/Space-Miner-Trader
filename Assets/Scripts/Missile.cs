@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Missile : MonoBehaviour
+public class Missile : Projectile
 {
     [SerializeField]
     float timeToFire, thrust, turn, power;
@@ -21,11 +21,16 @@ public class Missile : MonoBehaviour
         rb.AddForce(new Vector2(Random.Range(-3, 3), Random.Range(-3, 3)), ForceMode2D.Impulse);
     }
 
-    public void SetTarget(Transform t)
+    public override void SetProperties(Transform t, Ship source)
     {
+        this.source = source;
         target = t;
     }
-
+    public override void SetProperties(Vector2 aim, Ship source)
+    {
+        this.source = source;
+        transform.up = aim;
+    }
     // Update is called once per frame
     void Update()
     {
