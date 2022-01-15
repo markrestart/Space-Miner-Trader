@@ -12,21 +12,27 @@ public class Station : MonoBehaviour
     [SerializeField]
     private GameObject stationMenu, buySellMenu, menuLinePrefab, repair, fuel;
 
+    private float mechNeeds, bioNeeds, techNeeds;
+
 
     Player player;
+
+    public float BioNeeds { get => bioNeeds; set { bioNeeds = value; if (bioNeeds < 0) { bioNeeds = 0; } if (bioNeeds > 100) { bioNeeds = 100; } } }
+    public float TechNeeds { get => techNeeds; set { techNeeds = value; if (techNeeds < 0) { techNeeds = 0; } if (techNeeds > 100) { techNeeds = 100; } } }
+    public float MechNeeds { get => mechNeeds; set { mechNeeds = value; if (mechNeeds < 0) { mechNeeds = 0; } if (mechNeeds > 100) { mechNeeds = 100; } } }
 
     // Start is called before the first frame update
     void Start()
     {
+        BioNeeds = Random.Range(30, 70);
+        BioNeeds = Random.Range(30, 70);
+        BioNeeds = Random.Range(30, 70);
+
         repairPrice = Random.Range(1, 5);
         fuelPrice = Random.Range(1, 3);
 
         foreach(ResourceType r in ResourceLedger.RTs)
         {
-            int price = Random.Range(5, 40);
-            buyPrices.Add(r, price);
-            price = Mathf.RoundToInt(price * Random.Range(.5f, 1.1f));
-            sellPrices.Add(r, price);
             menuLines.Add(r, Instantiate(menuLinePrefab, buySellMenu.transform).GetComponent<BuySellManager>());
 
             menuLines[r].SetVars(this, r);
@@ -51,8 +57,25 @@ public class Station : MonoBehaviour
         player.gameObject.SetActive(true);
     }
 
+    void SetPrices()
+    {
+        repairPrice = Mathf.FloorToInt( 1 + mechNeeds/20);
+        fuelPrice = Mathf.FloorToInt(1 + bioNeeds / 50);
+
+        foreach (ResourceType r in ResourceLedger.RTs)
+        {
+            int price = Mathf.FloorToInt((r.bioValue * bioNeeds + r.mechValue * mechNeeds + r.techValue * techNeeds) / 100 + r.intrinsicValue);
+
+            buyPrices[r] = price;
+
+            sellPrices[r] = Mathf.FloorToInt(price * (1 + techNeeds/100));
+
+        }
+    }
+
     void SetButtons()
     {
+        SetPrices();
         foreach(ResourceType r in ResourceLedger.RTs)
         {
             menuLines[r].UpdateUI(
@@ -109,6 +132,7 @@ public class Station : MonoBehaviour
     {
         player.Self.Repair();
         player.Self.Credits -= repairPrice;
+        MechNeeds++;
         SetButtons();
     }
 
@@ -116,6 +140,7 @@ public class Station : MonoBehaviour
     {
         player.Self.Refuel();
         player.Self.Credits -= fuelPrice;
+        BioNeeds++;
         SetButtons();
     }
 
@@ -126,6 +151,10 @@ public class Station : MonoBehaviour
             if (player.Self.AddResource(r))
             {
                 player.Self.Credits -= buyPrices[r];
+
+                BioNeeds += r.bioValue / 10;
+                TechNeeds += r.techValue / 10;
+                MechNeeds += r.mechValue / 10;
             }
             SetButtons();
         }
@@ -138,6 +167,10 @@ public class Station : MonoBehaviour
             if (player.Self.RemoveResource(r))
             {
                 player.Self.Credits += sellPrices[r];
+
+                BioNeeds -= r.bioValue / 10;
+                TechNeeds -= r.techValue / 10;
+                MechNeeds -= r.mechValue / 10;
             }
             SetButtons();
         }

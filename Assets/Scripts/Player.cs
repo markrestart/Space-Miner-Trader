@@ -15,7 +15,6 @@ public class Player : MonoBehaviour
     {
         self = GetComponent<Ship>();
         map = GetComponentInChildren<Minimap>();
-        ResourceLedger.Initialize();
     }
 
     // Update is called once per frame
