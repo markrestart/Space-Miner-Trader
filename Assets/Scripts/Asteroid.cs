@@ -21,9 +21,8 @@ public class Asteroid : MonoBehaviour
             size = Random.Range(1, 8);
             health = Random.Range(1, 14) * size;
             style = Random.Range(0, sprites.Count);
-            size = size / transform.parent.localScale.x;
 
-            transform.localScale = new Vector3(size, size, size);
+            transform.localScale = new Vector3(size / transform.parent.localScale.x, size / transform.parent.localScale.y, size / transform.parent.localScale.z);
             GetComponent<SpriteRenderer>().sprite = sprites[style];
         }
     }
@@ -58,7 +57,7 @@ public class Asteroid : MonoBehaviour
             }
             else
             {
-                Instantiate(resource, transform.position, transform.rotation);
+                Instantiate(resource, transform.position, transform.rotation).GetComponent<Resource>().Data = ResourceLedger.RTs[style];
             }
 
             Destroy(gameObject);

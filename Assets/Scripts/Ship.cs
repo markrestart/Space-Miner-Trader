@@ -16,6 +16,9 @@ public class Ship : MonoBehaviour
     Weapon primaryWeapon, secondaryWeapon;
 
     [SerializeField]
+    LayerMask targetable;
+
+    [SerializeField]
     Transform primarySpawn, secondarySpawn;
 
     Vector2 velocity;
@@ -119,9 +122,10 @@ public class Ship : MonoBehaviour
                 weapon.LastFireTime = Time.time;
                 GameObject p = Instantiate(weapon.loadout, spawn.position, spawn.rotation);
                 p.transform.parent = transform.parent;
-                    RaycastHit2D hit = Physics2D.CircleCast(transform.position + transform.up * 2, 1, transform.up, 20);
+                    RaycastHit2D hit = Physics2D.CircleCast(transform.position + transform.up * 2, 1, transform.up, 20, targetable);
                 if (hit)
                 {
+                    print(hit.collider.tag);
                     p.GetComponent<Projectile>().SetProperties(hit.transform, this);
                 }
                 else

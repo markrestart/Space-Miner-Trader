@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3708530287321786848}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SecondaryWeapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   m_Component:
   - component: {fileID: 608696028163324721}
   - component: {fileID: 6553399829978664612}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Thrust
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -122,7 +122,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7402252200271605058}
   - component: {fileID: 2150063400039372102}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -203,7 +203,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2959074636014416464}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PrimaryWeapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -236,7 +236,7 @@ GameObject:
   - component: {fileID: 8638012470576052487}
   - component: {fileID: 8638012470576052485}
   - component: {fileID: 8624344299355748845}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ship
   m_TagString: Ship
   m_Icon: {fileID: 0}
@@ -355,6 +355,9 @@ MonoBehaviour:
     cooldownTime: 0
     energyCost: 0
     isAuto: 0
+  targetable:
+    serializedVersion: 2
+    m_Bits: 192
   primarySpawn: {fileID: 2959074636014416464}
   secondarySpawn: {fileID: 3708530287321786848}
   engineSprite: {fileID: 6553399829978664612}

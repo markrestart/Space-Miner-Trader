@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8517417849406212966}
   - component: {fileID: 8517417849406212967}
   - component: {fileID: 6582447320347927200}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Asteroid
   m_TagString: Asteroid
   m_Icon: {fileID: 0}
@@ -139,7 +139,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 8d36f29307bfc53419638218ed0b6e2c, type: 3}
   - {fileID: 21300000, guid: 7489365979c15a24e95cc950f5b703d9, type: 3}
   - {fileID: 21300000, guid: 73ad8ebaa47cb1343983f8787e2c2061, type: 3}
-  - {fileID: 21300000, guid: 4481d8f26e40a614fbc7d07d1cff5de4, type: 3}
   - {fileID: 21300000, guid: 2d8739ad72be8684f9405bb9501c1b93, type: 3}
   - {fileID: 21300000, guid: 3c551fe929909634b872e5da00eceb7c, type: 3}
   - {fileID: 21300000, guid: ed0fd96bfc4fb3040a7580cfdcd64d66, type: 3}

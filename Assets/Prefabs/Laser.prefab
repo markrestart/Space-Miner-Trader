@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 313892298255962146}
   - component: {fileID: 1231330170639816005}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 712445655929197628}
   - component: {fileID: 5658747260558905802}
   - component: {fileID: 8466221520221676951}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Laser
   m_TagString: Weapon
   m_Icon: {fileID: 0}
