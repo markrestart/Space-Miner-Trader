@@ -45,16 +45,22 @@ public class Frame : Part
         }
     }
 
-    public void Repair()
+    public void Repair(int amount = 1)
     {
-        currentHull++;
+        currentHull+= amount;
         if(currentHull > maxHull) { currentHull = maxHull; }
     }
 
-    public void Refuel()
+    public void Refuel(int amount = 1)
     {
-        currentfuel++;
+        currentfuel+= amount;
         if(currentfuel > fuelCapacity) { currentfuel = fuelCapacity; }
+    }
+
+    public void ClearInventory()
+    {
+        cargo.Clear();
+        cargoWeight = 0;
     }
 
     public float CurrentHull { get => currentHull; set => currentHull = value; }

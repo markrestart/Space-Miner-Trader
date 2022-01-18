@@ -25,8 +25,8 @@ public class Station : MonoBehaviour
     void Start()
     {
         BioNeeds = Random.Range(30, 70);
-        BioNeeds = Random.Range(30, 70);
-        BioNeeds = Random.Range(30, 70);
+        MechNeeds = Random.Range(30, 70);
+        TechNeeds = Random.Range(30, 70);
 
         repairPrice = Random.Range(1, 5);
         fuelPrice = Random.Range(1, 3);
@@ -71,6 +71,34 @@ public class Station : MonoBehaviour
             sellPrices[r] = Mathf.FloorToInt(price * (1 + techNeeds/100));
 
         }
+    }
+
+    public void TransactionWithAI(Ship ai)
+    {
+        SetPrices();
+
+        foreach (KeyValuePair<ResourceType, int> r in ai.Inventory)
+        {
+            {
+                ai.Credits += sellPrices[r.Key] * r.Value;
+
+                BioNeeds -= (r.Key.bioValue / 10f) * r.Value;
+                TechNeeds -= (r.Key.techValue / 10f) * r.Value;
+                MechNeeds -= (r.Key.mechValue / 10f) * r.Value;
+            }
+        }
+
+        int fuel = Mathf.Clamp(ai.Credits / fuelPrice, 0, Mathf.CeilToInt(ai.MaxFuel-ai.Fuel));
+        ai.Refuel(fuel);
+        ai.Credits -= fuel * fuelPrice;
+
+        int hull = Mathf.Clamp(ai.Credits / repairPrice, 0, Mathf.CeilToInt(ai.MaxHull - ai.Hull));
+        ai.Repair(hull);
+        ai.Credits -= hull * repairPrice;
+
+        ai.ClearInventory();
+
+        SetButtons();
     }
 
     void SetButtons()
@@ -152,9 +180,9 @@ public class Station : MonoBehaviour
             {
                 player.Self.Credits -= buyPrices[r];
 
-                BioNeeds += r.bioValue / 10;
-                TechNeeds += r.techValue / 10;
-                MechNeeds += r.mechValue / 10;
+                BioNeeds += r.bioValue / 10f;
+                TechNeeds += r.techValue / 10f;
+                MechNeeds += r.mechValue / 10f;
             }
             SetButtons();
         }
@@ -168,9 +196,9 @@ public class Station : MonoBehaviour
             {
                 player.Self.Credits += sellPrices[r];
 
-                BioNeeds -= r.bioValue / 10;
-                TechNeeds -= r.techValue / 10;
-                MechNeeds -= r.mechValue / 10;
+                BioNeeds -= r.bioValue / 10f;
+                TechNeeds -= r.techValue / 10f;
+                MechNeeds -= r.mechValue / 10f;
             }
             SetButtons();
         }

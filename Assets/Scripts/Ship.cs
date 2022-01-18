@@ -16,6 +16,9 @@ public class Ship : MonoBehaviour
     Weapon primaryWeapon, secondaryWeapon;
 
     [SerializeField]
+    AudioSource engineAudio, primaryWeaponAudio, secondaryWeaponAudio, shieldAudio;
+
+    [SerializeField]
     LayerMask targetable;
 
     [SerializeField]
@@ -78,6 +81,7 @@ public class Ship : MonoBehaviour
 
     public void Accelerate(float amount)
     {
+        amount = Mathf.Clamp(amount, .3f, 1);
         if (frame.Currentfuel >= engine.FuelPerSecond * Time.deltaTime && generator.CurrentEnergy >= engine.EnergyCost * Time.deltaTime)
         {
             velocity += (Vector2)transform.up * amount * engine.MainThrust * Time.deltaTime;
@@ -87,19 +91,24 @@ public class Ship : MonoBehaviour
         }
     }
 
+    public void ClearInventory()
+    {
+        frame.ClearInventory();
+    }
+
     public void AddForce(Vector2 force)
     {
         velocity += force;
     }
 
-    public void Repair()
+    public void Repair(int amount = 1)
     {
-        frame.Repair();
+        frame.Repair(amount);
     }
 
-    public void Refuel()
+    public void Refuel(int amount = 1)
     {
-        frame.Refuel();
+        frame.Refuel(amount);
     }
 
     public bool AddResource(ResourceType r)
@@ -125,7 +134,6 @@ public class Ship : MonoBehaviour
                     RaycastHit2D hit = Physics2D.CircleCast(transform.position + transform.up * 2, 1, transform.up, 20, targetable);
                 if (hit)
                 {
-                    print(hit.collider.tag);
                     p.GetComponent<Projectile>().SetProperties(hit.transform, this);
                 }
                 else
@@ -219,14 +227,32 @@ public class Ship : MonoBehaviour
         {
             if(gameObject.GetComponent<Player>() != null){
                 collision.gameObject.GetComponent<Station>().OpenStation();
+                transform.position = collision.transform.position + (transform.position - collision.transform.position).normalized * 4;
+                velocity = Vector2.zero;
             }
-            transform.position = collision.transform.position +  (transform.position - collision.transform.position).normalized * 4;
-            velocity = Vector2.zero;
+            else if(gameObject.GetComponent<AI>() != null && gameObject.GetComponent<AI>().Intent == AI.Intents.Station)
+            {
+                gameObject.GetComponent<AI>().Trade(collision.gameObject.GetComponent<Station>());
+            }
         }
     }
 
-    public void TakeDamage(float amount, Vector2 source)
+    private void OnCollisionStay2D(Collision2D collision)
     {
+        //TODO: ships should move away if overlapping
+        if(collision.gameObject.tag == "Ship")
+        {
+            print("Croosh");
+            AddForce(transform.position - collision.transform.position);
+        }
+    }
+
+    public void TakeDamage(float amount, Vector2 source, Ship from = null)
+    {
+        if(from != null && GetComponent<AI>() != null)
+        {
+            GetComponent<AI>().React(AI.Intents.Fight, from.gameObject);
+        }
         shieldSprite.transform.LookAt(source, Vector3.back);
         shieldSprite.transform.rotation = Quaternion.Euler(0, 0, shieldSprite.transform.rotation.eulerAngles.z);
 

@@ -28,7 +28,7 @@ public class Laser : Projectile
             collision.gameObject.GetComponent<Asteroid>().TakeDamge(power);
         }else if(collision.gameObject.tag == "Ship")
         {
-            collision.gameObject.GetComponent<Ship>().TakeDamage(power, transform.position);
+            collision.gameObject.GetComponent<Ship>().TakeDamage(power, transform.position, source);
         }
 
         Destroy(gameObject);

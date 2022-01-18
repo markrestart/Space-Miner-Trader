@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1f5ab85ab492de4f9a7d732e368876a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goalDistance: 5
+  combatDistance: 2
+  miningDistance: 6
 --- !u!1001 &3756328835533632852
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -78,7 +79,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8638012470576052485, guid: 408062637107c724c8b72396d639811f, type: 3}
       propertyPath: primaryWeapon.cooldownTime
-      value: 0.2
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 8638012470576052485, guid: 408062637107c724c8b72396d639811f, type: 3}
       propertyPath: secondaryWeapon.energyCost

@@ -70,7 +70,7 @@ public class Missile : Projectile
             else if (collision.gameObject.tag == "Ship")
             {
                 float relativeVelocity = (collision.gameObject.GetComponent<Ship>().Velocity - rb.velocity).magnitude;
-                collision.gameObject.GetComponent<Ship>().TakeDamage(relativeVelocity * power, transform.position);
+                collision.gameObject.GetComponent<Ship>().TakeDamage(relativeVelocity * power, transform.position, source);
             }
 
             Destroy(gameObject);

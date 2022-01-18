@@ -31,10 +31,12 @@ public class Explosion : MonoBehaviour
     {
         if(collision.gameObject.tag == "Asteroid" || collision.gameObject.tag == "Resource")
         {
+            print("Explodion pushing asteroid");
             collision.gameObject.GetComponent<Rigidbody2D>().AddForce((collision.transform.position - transform.position).normalized * force);
         }
         else if(collision.gameObject.tag == "Ship")
         {
+            print("Explosion pushing ship!");
             collision.gameObject.GetComponent<Ship>().AddForce((collision.transform.position - transform.position).normalized * force);
         }
     }

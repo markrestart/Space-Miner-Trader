@@ -16,7 +16,10 @@ public class Resource : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Data = ResourceLedger.RTs[Random.Range(0, ResourceLedger.RTs.Count)];
+        if(data.image == null)
+        {
+            Data = ResourceLedger.RTs[Random.Range(0, ResourceLedger.RTs.Count)];
+        }
     }
 
     // Update is called once per frame
