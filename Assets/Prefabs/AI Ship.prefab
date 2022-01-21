@@ -22,6 +22,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 8638012470576052485, guid: 408062637107c724c8b72396d639811f, type: 3}
+      propertyPath: engine.sound
+      value: 
+      objectReference: {fileID: 8300000, guid: ad5a08bd99979dc4fb23b00ff61c9e2a, type: 3}
+    - target: {fileID: 8638012470576052485, guid: 408062637107c724c8b72396d639811f, type: 3}
+      propertyPath: shield.sound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2140529b20a459d44981db49c3fb0e47, type: 3}
+    - target: {fileID: 8638012470576052485, guid: 408062637107c724c8b72396d639811f, type: 3}
       propertyPath: frame.maxHull
       value: 20
       objectReference: {fileID: 0}

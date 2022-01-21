@@ -113,7 +113,7 @@ MonoBehaviour:
   - spawn: {fileID: 8517417849406212986, guid: a3ead73fc2224544699583606c49df6e, type: 3}
     density: 5
   - spawn: {fileID: 4882266758643027036, guid: 7f54bec14247b1c4999d3f4088a61598, type: 3}
-    density: 0
+    density: 5
   - spawn: {fileID: 1116849705294591616, guid: 640a772c83be4aa4a92ffa67d90462a2, type: 3}
-    density: 0
+    density: 1
   blankChunk: {fileID: 4632774033462793424}

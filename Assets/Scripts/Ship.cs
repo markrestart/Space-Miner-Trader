@@ -16,7 +16,7 @@ public class Ship : MonoBehaviour
     Weapon primaryWeapon, secondaryWeapon;
 
     [SerializeField]
-    AudioSource engineAudio, primaryWeaponAudio, secondaryWeaponAudio, shieldAudio;
+    AudioSource engineAudio, shieldAudio;
 
     [SerializeField]
     LayerMask targetable;
@@ -67,6 +67,10 @@ public class Ship : MonoBehaviour
         GetComponent<SpriteRenderer>().sprite = frame.sprite;
         shieldSprite.sprite = shield.sprite;
         engineSprite.sprite = engine.Sprite;
+        engineAudio.clip = engine.Sound;
+        engineAudio.volume = 0;
+        engineAudio.Play();
+        shieldAudio.clip = shield.Sound;
     }
 
     public void Turn(float amount)
@@ -187,16 +191,19 @@ public class Ship : MonoBehaviour
     void Effects() {
         if (engineVisability > 0)
         {
+            engineAudio.volume = engineVisability;
             engineSprite.color = new Color(1,1,1,engineVisability);
             engineVisability = 0;
         }
         else
         {
+            engineAudio.volume = 0;
             engineSprite.color = new Color(1, 1, 1, 0);
         }
 
         if(shieldVisability > 0)
         {
+            shieldAudio.volume = shieldVisability / 10;
             shieldSprite.color = new Color(1, 1, 1, shieldVisability/10);
             shieldVisability -= Time.deltaTime;
         }
@@ -239,11 +246,9 @@ public class Ship : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        //TODO: ships should move away if overlapping
         if(collision.gameObject.tag == "Ship")
         {
-            print("Croosh");
-            AddForce(transform.position - collision.transform.position);
+            AddForce((transform.position - collision.transform.position)/5);
         }
     }
 
@@ -260,6 +265,8 @@ public class Ship : MonoBehaviour
         {
             shield.CurrentShield -= amount;
             shieldVisability += amount;
+            if (!shieldAudio.isPlaying) { shieldAudio.Play(); }
+            shieldAudio.pitch = Random.Range(.5f, 1.5f);
             if(shieldVisability > 10) { shieldVisability = 10; }
         }
         else

@@ -9,7 +9,7 @@ public class Asteroid : MonoBehaviour
     [SerializeField]
     List<Sprite> sprites;
     [SerializeField]
-    GameObject resource;
+    GameObject resource, explosion;
 
     bool created;
 
@@ -57,7 +57,11 @@ public class Asteroid : MonoBehaviour
             }
             else
             {
-                Instantiate(resource, transform.position, transform.rotation).GetComponent<Resource>().Data = ResourceLedger.RTs[style];
+                Instantiate(explosion, transform.position, transform.rotation);
+                for (int i = 0; i < size; i++)
+                {
+                    Instantiate(resource, transform.position + new Vector3(Random.Range(-.3f,.3f),Random.Range(-.3f,.3f)), transform.rotation).GetComponent<Resource>().Data = ResourceLedger.RTs[style];
+                }
             }
 
             Destroy(gameObject);

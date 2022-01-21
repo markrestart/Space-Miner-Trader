@@ -11,6 +11,8 @@ public class Missile : Projectile
     Rigidbody2D rb;
 
     Transform target;
+    [SerializeField]
+    GameObject explosion;
 
     // Start is called before the first frame update
     void Start()
@@ -73,6 +75,7 @@ public class Missile : Projectile
                 collision.gameObject.GetComponent<Ship>().TakeDamage(relativeVelocity * power, transform.position, source);
             }
 
+            Instantiate(explosion, transform.position, transform.rotation);
             Destroy(gameObject);
         }
     }

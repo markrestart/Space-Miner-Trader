@@ -9,6 +9,8 @@ public class Engine : Part
     private float turnThrust, mainThrust, brakeThrust, maxVelocity, fuelPerSecond, energyCost;
     [SerializeField]
     private Sprite sprite;
+    [SerializeField]
+    private AudioClip sound;
 
     public float TurnThrust { get => turnThrust; }
     public float MainThrust { get => mainThrust; }
@@ -17,4 +19,5 @@ public class Engine : Part
     public float FuelPerSecond { get => fuelPerSecond; }
     public float EnergyCost { get => energyCost; }
     public Sprite Sprite { get => sprite; set => sprite = value; }
+    public AudioClip Sound { get => sound; }
 }
