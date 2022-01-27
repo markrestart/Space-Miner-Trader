@@ -6,10 +6,13 @@ public class Resource : MonoBehaviour
 {
     [SerializeField]
     ResourceType data;
+    [SerializeField]
+    ResourceOverlay overlay;
 
     public ResourceType Data { get => data; set {
             data = value;
             GetComponent<SpriteRenderer>().sprite = data.image;
+            overlay.Initialize(data);
         }
     }
 
@@ -26,5 +29,16 @@ public class Resource : MonoBehaviour
     void Update()
     {
         
+    }
+
+
+    private void OnMouseEnter()
+    {
+        overlay.gameObject.SetActive(true);
+    }
+
+    private void OnMouseExit()
+    {
+        overlay.gameObject.SetActive(false);
     }
 }

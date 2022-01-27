@@ -10,7 +10,9 @@ public class Station : MonoBehaviour
     private Dictionary<ResourceType, int> sellPrices = new Dictionary<ResourceType, int>();
     private Dictionary<ResourceType, BuySellManager> menuLines = new Dictionary<ResourceType, BuySellManager>();
     [SerializeField]
-    private GameObject stationMenu, buySellMenu, menuLinePrefab, repair, fuel;
+    private GameObject stationMenu, buySellMenu, menuLinePrefab, repair, fuel, maxRepair, maxFuel;
+    [SerializeField]
+    private Text nameLabel;
 
     private float mechNeeds, bioNeeds, techNeeds;
 
@@ -20,6 +22,10 @@ public class Station : MonoBehaviour
     public float BioNeeds { get => bioNeeds; set { bioNeeds = value; if (bioNeeds < 0) { bioNeeds = 0; } if (bioNeeds > 100) { bioNeeds = 100; } } }
     public float TechNeeds { get => techNeeds; set { techNeeds = value; if (techNeeds < 0) { techNeeds = 0; } if (techNeeds > 100) { techNeeds = 100; } } }
     public float MechNeeds { get => mechNeeds; set { mechNeeds = value; if (mechNeeds < 0) { mechNeeds = 0; } if (mechNeeds > 100) { mechNeeds = 100; } } }
+
+    static string[] prefix = new string[] { "Gold ", "Yellow ", "Violet ", "Mining ", "Deep Space ", "Eagle ", "Viper ", "Titan ", "Deeprock ", "Star ", "Farpoint ", "Babylon ", "Elysium ", "Voyager ", "Apollo ", "Bradbury ", "Galaxy ", "Nova " };
+    static string[] middle = new string[] { "Base ", "Station ", "Outpost ", "Trader ", "City ", "Platform ", "Refuge ", "Terminal ", "Research ", "Observation ", "Relay ", "Hub " };
+    static string[] suffix = new string[] { "Alpha", "Beta", "Delta", "Gamma ", "Epsilon", "Zeta", "Pi", "Sigma", "Theta", "Omicron", "Omega", "Prime", "Second", "Nine", "Five", "Seven", "One" };
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +37,10 @@ public class Station : MonoBehaviour
         repairPrice = Random.Range(1, 5);
         fuelPrice = Random.Range(1, 3);
 
-        foreach(ResourceType r in ResourceLedger.RTs)
+        string name = prefix[Random.Range(0, prefix.Length)] + middle[Random.Range(0, middle.Length)] + suffix[Random.Range(0, suffix.Length)];
+        nameLabel.text = name;
+
+        foreach (ResourceType r in ResourceLedger.RTs)
         {
             menuLines.Add(r, Instantiate(menuLinePrefab, buySellMenu.transform).GetComponent<BuySellManager>());
 
@@ -101,14 +110,14 @@ public class Station : MonoBehaviour
         SetButtons();
     }
 
-    void SetButtons()
+    public void SetButtons()
     {
         SetPrices();
         foreach(ResourceType r in ResourceLedger.RTs)
         {
             menuLines[r].UpdateUI(
-                player.Self.Cargo + r.weight <= player.Self.MaxCargo && player.Self.Credits - buyPrices[r] >= 0, //Can Buy if player has enough cargo and credits
-                player.Self.Inventory.ContainsKey(r) && player.Self.Inventory[r] >= 1, //Can Sell if player has at least one of the resource
+                player.Self.Cargo + r.weight * menuLines[r].Amount <= player.Self.MaxCargo && player.Self.Credits - buyPrices[r] * menuLines[r].Amount >= 0, //Can Buy if player has enough cargo and credits
+                player.Self.Inventory.ContainsKey(r) && player.Self.Inventory[r] >= menuLines[r].Amount, //Can Sell if player has at least one of the resource
                 buyPrices[r],
                 sellPrices[r],
                 r.name
@@ -122,17 +131,27 @@ public class Station : MonoBehaviour
             {
                 repair.GetComponent<Button>().interactable = true;
                 repair.GetComponentInChildren<Text>().text = "Repair - " + repairPrice + "C";
+
+                int maxRepairAmount = (int)Mathf.Clamp(player.Self.Credits / repairPrice, 0, player.Self.MaxHull - player.Self.Hull + 1);
+                maxRepair.GetComponent<Button>().interactable = true;
+                maxRepair.GetComponentInChildren<Text>().text = "Repair " + maxRepairAmount + " - " + repairPrice * maxRepairAmount + "C";
             }
             else
             {
                 repair.GetComponent<Button>().interactable = false;
                 repair.GetComponentInChildren<Text>().text = "Can't afford - " + repairPrice + "C";
+
+                maxRepair.GetComponent<Button>().interactable = false;
+                maxRepair.GetComponentInChildren<Text>().text = "Can't afford - " + repairPrice + "C";
             }
         }
         else
         {
             repair.GetComponent<Button>().interactable = false;
             repair.GetComponentInChildren<Text>().text = "Fully repaired";
+
+            maxRepair.GetComponent<Button>().interactable = false;
+            maxRepair.GetComponentInChildren<Text>().text = "Fully repaired";
         }
 
         //Fuel
@@ -142,17 +161,27 @@ public class Station : MonoBehaviour
             {
                 fuel.GetComponent<Button>().interactable = true;
                 fuel.GetComponentInChildren<Text>().text = "Refuel - " + fuelPrice + "C";
+
+                int maxFuelAmount = (int)Mathf.Clamp(player.Self.Credits / fuelPrice, 0, player.Self.MaxFuel - player.Self.Fuel + 1);
+                maxFuel.GetComponent<Button>().interactable = true;
+                maxFuel.GetComponentInChildren<Text>().text = "Refuel " + maxFuelAmount + " - " + fuelPrice * maxFuelAmount + "C";
             }
             else
             {
                 fuel.GetComponent<Button>().interactable = false;
                 fuel.GetComponentInChildren<Text>().text = "Can't afford - " + fuelPrice + "C";
+
+                maxFuel.GetComponent<Button>().interactable = false;
+                maxFuel.GetComponentInChildren<Text>().text = "Can't afford - " + fuelPrice + "C";
             }
         }
         else
         {
             fuel.GetComponent<Button>().interactable = false;
             fuel.GetComponentInChildren<Text>().text = "Fully fueled";
+
+            maxFuel.GetComponent<Button>().interactable = false;
+            maxFuel.GetComponentInChildren<Text>().text = "Fully fueled";
         }
     }
 
@@ -172,33 +201,51 @@ public class Station : MonoBehaviour
         SetButtons();
     }
 
-    public void Buy(ResourceType r)
+    public void RepairMax()
     {
-        if(player.Self.Credits >= buyPrices[r] && player.Self.Cargo + r.weight <= player.Self.MaxCargo)
+        int maxRepairAmount = (int)Mathf.Clamp(player.Self.Credits/repairPrice, 0, player.Self.MaxHull - player.Self.Hull + 1);
+        player.Self.Repair(maxRepairAmount);
+        player.Self.Credits -= repairPrice;
+        MechNeeds+= maxRepairAmount;
+        SetButtons();
+    }
+
+    public void BuyFuelMax()
+    {
+        int maxFuelAmount = (int)Mathf.Clamp(player.Self.Credits/fuelPrice, 0, player.Self.MaxFuel - player.Self.Fuel + 1);
+        player.Self.Refuel(maxFuelAmount);
+        player.Self.Credits -= fuelPrice * maxFuelAmount;
+        BioNeeds+= maxFuelAmount;
+        SetButtons();
+    }
+
+    public void Buy(ResourceType r, int amount = 1)
+    {
+        if(player.Self.Credits >= buyPrices[r] * amount && player.Self.Cargo + r.weight * amount <= player.Self.MaxCargo)
         {
             if (player.Self.AddResource(r))
             {
-                player.Self.Credits -= buyPrices[r];
+                player.Self.Credits -= buyPrices[r] * amount;
 
-                BioNeeds += r.bioValue / 10f;
-                TechNeeds += r.techValue / 10f;
-                MechNeeds += r.mechValue / 10f;
+                BioNeeds += r.bioValue * amount / 10f;
+                TechNeeds += r.techValue * amount / 10f;
+                MechNeeds += r.mechValue * amount / 10f;
             }
             SetButtons();
         }
     }
 
-    public void Sell(ResourceType r)
+    public void Sell(ResourceType r, int amount = 1)
     {
-        if (player.Self.Inventory.ContainsKey(r) && player.Self.Inventory[r] >= 1)
+        if (player.Self.Inventory.ContainsKey(r) && player.Self.Inventory[r] >= amount)
         {
-            if (player.Self.RemoveResource(r))
+            if (player.Self.RemoveResource(r, amount))
             {
-                player.Self.Credits += sellPrices[r];
+                player.Self.Credits += sellPrices[r] * amount;
 
-                BioNeeds -= r.bioValue / 10f;
-                TechNeeds -= r.techValue / 10f;
-                MechNeeds -= r.mechValue / 10f;
+                BioNeeds -= r.bioValue * amount / 10f;
+                TechNeeds -= r.techValue * amount / 10f;
+                MechNeeds -= r.mechValue * amount / 10f;
             }
             SetButtons();
         }

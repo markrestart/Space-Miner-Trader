@@ -218,7 +218,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8181206019328113755}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.78, z: 0}
+  m_LocalPosition: {x: 0, y: 0.78, z: -1.384}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8638012470576052486}
@@ -365,8 +365,7 @@ MonoBehaviour:
   targetable:
     serializedVersion: 2
     m_Bits: 192
-  primarySpawn: {fileID: 2959074636014416464}
-  secondarySpawn: {fileID: 3708530287321786848}
+  weaponSpawn: {fileID: 2959074636014416464}
   engineSprite: {fileID: 6553399829978664612}
   shieldSprite: {fileID: 2150063400039372102}
   explosion: {fileID: 1655717462871556693, guid: 4975f14719ab5924cb26bd367f03f4f1, type: 3}

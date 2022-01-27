@@ -218,6 +218,7 @@ MonoBehaviour:
   maxScale: 10
   moveLerp: 0.32
   scaleLerp: 0.065
+  scaleMultiplier: 1.75
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0

@@ -31,12 +31,12 @@ public class Frame : Part
         }
     }
 
-    public bool RemoveResource(ResourceType data)
+    public bool RemoveResource(ResourceType data, int amount = 1)
     {
-        if (cargo.ContainsKey(data) && cargo[data] >= 1)
+        if (cargo.ContainsKey(data) && cargo[data] >= amount)
         {
-            cargo[data]--;
-            cargoWeight -= data.weight;
+            cargo[data] -= amount;
+            cargoWeight -= data.weight * amount;
             return true;
         }
         else

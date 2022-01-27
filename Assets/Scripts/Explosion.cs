@@ -9,17 +9,26 @@ public class Explosion : MonoBehaviour
 
     SpriteRenderer render;
 
+
+    float startTime;
+    Vector3 startScale;
+
     // Start is called before the first frame update
     void Start()
     {
         render = GetComponent<SpriteRenderer>();
+
+        startScale = transform.localScale;
+        startTime = timer;
     }
 
     // Update is called once per frame
     void Update()
     {
+
         timer -= Time.deltaTime;
-        render.color = Color.Lerp(Color.clear, Color.white, timer / 3);
+        render.color = Color.Lerp(Color.clear, Color.white, timer / startTime);
+        transform.localScale = Vector3.Lerp(Vector3.zero, startScale, (startTime - timer) / startTime);
 
         if(timer <= 0)
         {
@@ -31,13 +40,11 @@ public class Explosion : MonoBehaviour
     {
         if(collision.gameObject.tag == "Asteroid" || collision.gameObject.tag == "Resource")
         {
-            print("Explodion pushing asteroid");
-            collision.gameObject.GetComponent<Rigidbody2D>().AddForce((collision.transform.position - transform.position).normalized * force);
+            collision.gameObject.GetComponent<Rigidbody2D>().AddForce((collision.transform.position - transform.position).normalized * force * ((startTime - timer) / startTime));
         }
         else if(collision.gameObject.tag == "Ship")
         {
-            print("Explosion pushing ship!");
-            collision.gameObject.GetComponent<Ship>().AddForce((collision.transform.position - transform.position).normalized * force);
+            collision.gameObject.GetComponent<Ship>().AddForce((collision.transform.position - transform.position).normalized * force * ((startTime - timer) / startTime));
         }
     }
 }

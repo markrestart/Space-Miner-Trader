@@ -10,6 +10,8 @@ public class Asteroid : MonoBehaviour
     List<Sprite> sprites;
     [SerializeField]
     GameObject resource, explosion;
+    [SerializeField]
+    ResourceOverlay overlay;
 
     bool created;
 
@@ -51,20 +53,36 @@ public class Asteroid : MonoBehaviour
                 GameObject a1 = Instantiate(gameObject, transform.position, transform.rotation);
                 a1.GetComponent<Asteroid>().SetStats(s1, style);
                 a1.GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-4, 4), Random.Range(-4, 4)));
+                a1.transform.parent = transform.parent;
                 GameObject a2 = Instantiate(gameObject, transform.position, transform.rotation);
                 a2.GetComponent<Asteroid>().SetStats(s2, style);
                 a2.GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-4, 4), Random.Range(-4, 4)));
+                a2.transform.parent = transform.parent;
             }
             else
             {
                 Instantiate(explosion, transform.position, transform.rotation);
                 for (int i = 0; i < size; i++)
                 {
-                    Instantiate(resource, transform.position + new Vector3(Random.Range(-.3f,.3f),Random.Range(-.3f,.3f)), transform.rotation).GetComponent<Resource>().Data = ResourceLedger.RTs[style];
+                    GameObject r = Instantiate(resource, transform.position + new Vector3(Random.Range(-.3f, .3f), Random.Range(-.3f, .3f)), transform.rotation);
+                    r.GetComponent<Resource>().Data = ResourceLedger.RTs[style];
+                    r.transform.parent = transform.parent;
                 }
             }
 
             Destroy(gameObject);
         }
+    }
+
+
+    private void OnMouseEnter()
+    {
+        overlay.Initialize(ResourceLedger.RTs[style]);
+        overlay.gameObject.SetActive(true);
+    }
+
+    private void OnMouseExit()
+    {
+        overlay.gameObject.SetActive(false);
     }
 }

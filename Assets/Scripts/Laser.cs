@@ -31,7 +31,17 @@ public class Laser : Projectile
             collision.gameObject.GetComponent<Ship>().TakeDamage(power, transform.position, source);
         }
 
-        Destroy(gameObject);
+        AudioSource audio = GetComponent<AudioSource>();
+        if (audio.isPlaying)
+        {
+            Destroy(gameObject, audio.clip.length - audio.time);
+            GetComponent<Collider2D>().enabled = false;
+            GetComponentInChildren<SpriteRenderer>().enabled = false;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
 }

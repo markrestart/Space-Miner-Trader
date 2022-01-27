@@ -10,7 +10,9 @@ public class BuySellManager : MonoBehaviour
     private Station station;
     private ResourceType resource;
 
+    private int amount = 1;
 
+    public int Amount { get => amount; }
 
     // Start is called before the first frame update
     void Start()
@@ -30,7 +32,7 @@ public class BuySellManager : MonoBehaviour
         label.text = name;
         if (canBuy)
         {
-            buyText.text = "Buy - " + buyPrice + "C";
+            buyText.text = "Buy "+ amount + " - " + buyPrice * amount + "C";
             buy.interactable = true;
         }
         else
@@ -40,7 +42,7 @@ public class BuySellManager : MonoBehaviour
         }
         if(canSell)
         {
-            sellText.text = "Sell - " + sellPrice + "C";
+            sellText.text = "Sell " + amount + " - " + sellPrice * amount + "C";
             sell.interactable = true;
         }
         else
@@ -48,15 +50,36 @@ public class BuySellManager : MonoBehaviour
             sellText.text = "Cannot sell";
             sell.interactable = false;
         }
+
+        if(!canBuy && !canSell && amount >= 1)
+        {
+            amount--;
+            station.SetButtons();
+        }
+    }
+
+    public void More()
+    {
+        amount++;
+        station.SetButtons();
+    }
+
+    public void Less()
+    {
+        if(amount > 1)
+        {
+            amount--;
+            station.SetButtons();
+        }
     }
 
     public void Buy()
     {
-        station.Buy(resource);
+        station.Buy(resource, amount);
     }
 
     public void Sell()
     {
-        station.Sell(resource);
+        station.Sell(resource, amount);
     }
 }

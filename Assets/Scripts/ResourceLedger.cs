@@ -15,12 +15,28 @@ public static class ResourceLedger
             Sprite sprite = sprites[i];
             int weight = Random.Range(1, 10);
             int valuePoints = 10 + weight;
-            int bioValue = Random.Range(1, valuePoints / 3);
-            valuePoints -= bioValue;
-            int mechValue = Random.Range(1, valuePoints / 2);
-            valuePoints -= mechValue;
-            int techValue = Random.Range(1, valuePoints);
-            int intrinsicValue = valuePoints;
+            int bioValue = 0, mechValue = 0, techValue = 0, intrinsicValue = 0;
+            while(valuePoints > 0)
+            {
+                int rand = Random.Range(0,4);
+                switch (rand)
+                {
+                    case 1:
+                        bioValue++;
+                        break;
+                    case 2:
+                        techValue++;
+                        break;
+                    case 3:
+                        mechValue++;
+                        break;
+                    default:
+                        intrinsicValue++;
+                        break;
+                }
+
+                valuePoints--;
+            }
 
             string name = prefix[Random.Range(0, prefix.Length)] + suffix[Random.Range(0, suffix.Length)];
 

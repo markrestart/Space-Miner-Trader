@@ -22,7 +22,7 @@ public class Ship : MonoBehaviour
     LayerMask targetable;
 
     [SerializeField]
-    Transform primarySpawn, secondarySpawn;
+    Transform weaponSpawn;
 
     Vector2 velocity;
 
@@ -120,9 +120,9 @@ public class Ship : MonoBehaviour
         return frame.AddResource(r);
     }
 
-    public bool RemoveResource(ResourceType r)
+    public bool RemoveResource(ResourceType r, int amount = 1)
     {
-        return frame.RemoveResource(r);
+        return frame.RemoveResource(r, amount);
     }
 
     private void FireWeapon(bool newPress, Weapon weapon, Transform spawn)
@@ -150,12 +150,12 @@ public class Ship : MonoBehaviour
 
     public void FirePrimary(bool newPress)
     {
-        FireWeapon(newPress, primaryWeapon, primarySpawn);
+        FireWeapon(newPress, primaryWeapon, weaponSpawn);
     }
 
     public void FireSecondary(bool newPress)
     {
-        FireWeapon(newPress, secondaryWeapon, primarySpawn);
+        FireWeapon(newPress, secondaryWeapon, weaponSpawn);
     }
 
     // Update is called once per frame
